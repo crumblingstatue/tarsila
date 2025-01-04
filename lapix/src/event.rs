@@ -1,4 +1,4 @@
-pub use crate::{Bitmap, CanvasEffect, Color, Point, Position, Size, Tool, Transform};
+pub use crate::{CanvasEffect, Color, Point, Position, Size, Tool, Transform};
 use serde::{Deserialize, Serialize};
 use std::fmt::Debug;
 use std::path::PathBuf;

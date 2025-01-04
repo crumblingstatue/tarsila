@@ -236,7 +236,6 @@ impl<IMG: Bitmap> Layer<IMG> {
 mod tests {
     use super::*;
     use crate::bitmap::TestImage;
-    use crate::color;
     use test_case::test_case;
 
     fn get_three_layer_canvas() -> Layers<TestImage> {

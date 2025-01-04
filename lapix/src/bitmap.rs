@@ -67,10 +67,8 @@ pub trait Bitmap: Clone {
     }
 }
 
-#[cfg(feature = "test-utils")]
 pub use test::TestImage;
 
-#[cfg(feature = "test-utils")]
 mod test {
     use super::*;
     use serde::{Deserialize, Serialize};
@@ -134,7 +132,7 @@ mod test {
         fn bytes(&self) -> &[u8] {
             &self.bytes
         }
-        fn from_parts(size: Size<i32>, bytes: &[u8]) -> Self {
+        fn from_parts(_size: Size<i32>, _bytes: &[u8]) -> Self {
             todo!()
         }
         fn set_from(&mut self, other: &Self) {

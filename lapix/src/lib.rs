@@ -32,5 +32,4 @@ pub use tool::Tool;
 pub use transform::Transform;
 pub use util::{LoadProject, SaveProject};
 
-#[cfg(feature = "test-utils")]
 pub use bitmap::TestImage;
