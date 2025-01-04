@@ -89,13 +89,11 @@ mod test {
             self.bytes = self
                 .pixels
                 .iter()
-                .map(|row| {
+                .flat_map(|row| {
                     row.iter()
-                        .map(|c| [c.r, c.g, c.b, c.a])
-                        .flatten()
+                        .flat_map(|c| [c.r, c.g, c.b, c.a])
                         .collect::<Vec<_>>()
                 })
-                .flatten()
                 .collect();
         }
     }

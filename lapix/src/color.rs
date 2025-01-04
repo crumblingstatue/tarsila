@@ -136,7 +136,7 @@ impl ColorF32 {
             (self.b * 1000.0) as i32,
         ) as f32;
 
-        return (max - min) / max;
+        (max - min) / max
     }
 
     pub fn value(&self) -> f32 {

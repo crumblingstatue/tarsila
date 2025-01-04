@@ -75,7 +75,7 @@ impl Palette {
                 + (color.saturation() * 10_000.) as i32
                 + (color.value() * 10_000.) as i32
         }
-        self.0.sort_by(|a, b| sort_val(a).cmp(&sort_val(b)));
+        self.0.sort_by_key(sort_val);
     }
 }
 
