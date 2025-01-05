@@ -1,5 +1,5 @@
-use crate::Effect;
 use lapix::Event;
+use {crate::Effect, egui_macroquad::egui};
 
 pub struct LayersPanel {
     num_layers: usize,

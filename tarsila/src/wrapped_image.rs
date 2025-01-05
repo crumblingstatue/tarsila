@@ -1,5 +1,5 @@
+use egui_macroquad::macroquad::prelude::*;
 use lapix::{Bitmap, Color, Point, Size};
-use macroquad::prelude::*;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
 #[derive(Debug, Clone)]

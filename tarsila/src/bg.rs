@@ -1,8 +1,8 @@
 use crate::graphics::DrawContext;
 use crate::wrapped_image::WrappedImage;
+use egui_macroquad::macroquad::prelude::*;
 use lapix::color::TRANSPARENT;
 use lapix::{Bitmap, Color};
-use macroquad::prelude::*;
 
 const CHECKERED_TILE_SIZE: f32 = 64.;
 const CHECKERED_TILE_PIX_PER_SQ: f32 = 4.;
@@ -65,10 +65,10 @@ impl Background {
                     ..Default::default()
                 };
                 draw_texture_ex(
-                    self.checkered_tile,
+                    &self.checkered_tile,
                     pos.x,
                     pos.y,
-                    macroquad::prelude::WHITE,
+                    egui_macroquad::macroquad::prelude::WHITE,
                     params,
                 );
             }

@@ -1,5 +1,5 @@
-use crate::gui::GuiSyncParams;
 use lapix::{Color, Position, Size, Tool};
+use {crate::gui::GuiSyncParams, egui_macroquad::egui};
 
 pub struct StatusBar {
     mouse_canvas: Position<i32>,

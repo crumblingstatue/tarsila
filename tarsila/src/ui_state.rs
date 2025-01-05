@@ -7,10 +7,11 @@ use crate::mouse::{CursorType, MouseManager};
 use crate::project;
 use crate::wrapped_image::WrappedImage;
 use crate::{graphics, Result, Timer};
+use egui_macroquad::macroquad;
+use egui_macroquad::macroquad::prelude::Color as MqColor;
+use egui_macroquad::macroquad::prelude::{FilterMode, Texture2D};
 use lapix::primitives::*;
 use lapix::{Canvas, CanvasEffect, Event, Layer, LoadProject, SaveProject, Selection, State, Tool};
-use macroquad::prelude::Color as MqColor;
-use macroquad::prelude::{FilterMode, Texture2D};
 use std::default::Default;
 use std::time::SystemTime;
 
@@ -268,11 +269,6 @@ impl UiState {
 
         // TODO: most of this logic should be in some update method, not a draw one
         if let Some(img) = self.inner.free_image() {
-            // Macroquad's Texture2D is not automatically freed, so we need to free it manually,
-            // otherwise we risk exhausting video memory (and even system memory on some systems).
-            if let Some(tex) = &mut self.free_image_tex {
-                tex.delete();
-            }
             let tex = Texture2D::from_image(&img.texture.0);
             tex.set_filter(FilterMode::Nearest);
             self.free_image_tex = Some(tex);
@@ -281,13 +277,13 @@ impl UiState {
                 ctx,
                 img,
                 self.inner.layers().active().opacity(),
-                self.free_image_tex.unwrap(),
+                self.free_image_tex.as_ref().unwrap(),
             );
         } else {
             self.free_image_tex = None;
         }
 
-        egui_macroquad::draw();
+        self.gui.egui_mq.draw();
         self.gui.draw_preview(self);
         self.mouse.draw();
 
@@ -467,8 +463,8 @@ impl UiState {
         self.inner.layers().count()
     }
 
-    pub fn layer_tex(&self, index: usize) -> Texture2D {
-        self.layer_textures[index]
+    pub fn layer_tex(&self, index: usize) -> &Texture2D {
+        &self.layer_textures[index]
     }
 
     pub fn zoom_in(&mut self) {

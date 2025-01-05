@@ -1,9 +1,9 @@
 use crate::wrapped_image::WrappedImage;
 use crate::UiState;
+use egui_macroquad::macroquad::prelude::Color as MqColor;
+use egui_macroquad::macroquad::prelude::*;
 use lapix::graphics;
 use lapix::{Bitmap, FreeImage, Point, Position, Rect, Selection, Size};
-use macroquad::prelude::Color as MqColor;
-use macroquad::prelude::*;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 const DASHED_LINE_SEGMENT: f32 = 5.;
@@ -21,7 +21,7 @@ pub struct DrawContext {
     pub selection: Option<Selection>,
 }
 
-pub fn draw_texture_helper(texture: Texture2D, p: Position<f32>, scale: f32) {
+pub fn draw_texture_helper(texture: &Texture2D, p: Position<f32>, scale: f32) {
     let w = texture.width();
     let h = texture.height();
 
@@ -73,7 +73,7 @@ pub fn draw_free_image(
     ctx: DrawContext,
     img: &FreeImage<WrappedImage>,
     layer_opacity: u8,
-    free_image_tex: Texture2D,
+    free_image_tex: &Texture2D,
 ) {
     let w = img.texture.width() as f32;
     let h = img.texture.height() as f32;
@@ -90,7 +90,7 @@ pub fn draw_free_image(
     };
 
     let color = [255, 255, 255, layer_opacity];
-    macroquad::prelude::draw_texture_ex(free_image_tex, x, y, color.into(), params);
+    egui_macroquad::macroquad::prelude::draw_texture_ex(free_image_tex, x, y, color.into(), params);
 }
 
 pub fn draw_selection(ctx: DrawContext, free_image: Option<&FreeImage<WrappedImage>>) {
@@ -119,7 +119,7 @@ pub fn draw_spritesheet_boundaries(ctx: DrawContext) {
             let x = p0.x + i as f32 * w;
             let y = p0.y + j as f32 * h;
 
-            macroquad::prelude::draw_rectangle_lines(
+            egui_macroquad::macroquad::prelude::draw_rectangle_lines(
                 x,
                 y,
                 w,
@@ -151,6 +151,12 @@ pub fn draw_canvas(state: &UiState) {
         };
 
         let color = [255, 255, 255, state.layer(i).opacity()];
-        macroquad::prelude::draw_texture_ex(texture, p.x, p.y, color.into(), params);
+        egui_macroquad::macroquad::prelude::draw_texture_ex(
+            texture,
+            p.x,
+            p.y,
+            color.into(),
+            params,
+        );
     }
 }

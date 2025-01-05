@@ -1,7 +1,7 @@
 use super::{InputEvent, InputMapper, KeyBindings, KeyboardKey, KeyboardModifier, MouseButton};
 use crate::Effect;
+use egui_macroquad::macroquad::prelude as mq;
 use lapix::Position;
-use macroquad::prelude as mq;
 
 #[derive(Debug)]
 pub struct InputManager {

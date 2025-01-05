@@ -1,6 +1,9 @@
-use crate::{Effect, UiEvent};
 use lapix::{Event, Size, Tool, Transform};
 use std::path::PathBuf;
+use {
+    crate::{Effect, UiEvent},
+    egui_macroquad::egui,
+};
 
 pub struct MenuBar {
     last_file: Option<PathBuf>,

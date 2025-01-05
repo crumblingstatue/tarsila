@@ -1,8 +1,8 @@
 use super::{InputEvent, KeyboardKey, KeyboardModifier};
 use crate::mouse::CursorType;
 use crate::{Effect, UiEvent};
+use egui_macroquad::macroquad::prelude as mq;
 use lapix::{Direction, Event, Point, Tool};
-use macroquad::prelude as mq;
 use std::collections::HashSet;
 use std::fmt::Debug;
 use std::hash::Hash;

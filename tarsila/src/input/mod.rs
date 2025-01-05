@@ -5,8 +5,8 @@ pub mod mapper;
 pub use bindings::KeyBindings;
 pub use mapper::InputMapper;
 
+use egui_macroquad::macroquad::prelude as mq;
 use lapix::Point;
-use macroquad::prelude as mq;
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct MouseButton(mq::MouseButton);

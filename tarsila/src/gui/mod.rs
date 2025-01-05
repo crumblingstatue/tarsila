@@ -1,6 +1,9 @@
-use crate::{Effect, UiEvent, UiState};
+use egui_macroquad::macroquad::prelude::*;
 use lapix::{Position, Size, Tool};
-use macroquad::prelude::*;
+use {
+    crate::{Effect, UiEvent, UiState},
+    egui_macroquad::{egui, EguiMqInteg},
+};
 
 mod layers;
 mod menu;
@@ -43,6 +46,7 @@ pub struct Gui {
     menu: MenuBar,
     mouse_on_canvas: bool,
     selected_tool: Tool,
+    pub egui_mq: EguiMqInteg,
 }
 
 impl Gui {
@@ -56,6 +60,7 @@ impl Gui {
             menu: MenuBar::new(),
             mouse_on_canvas: false,
             selected_tool: Tool::Brush,
+            egui_mq: EguiMqInteg::new(),
         }
     }
 
@@ -90,8 +95,8 @@ impl Gui {
         let bg_strong_color = egui::Color32::from_rgb(230, 230, 230);
         let bg_weak_color = egui::Color32::from_rgb(150, 150, 150);
         let text_color = Some(egui::Color32::from_rgb(0, 0, 0));
-
-        egui_macroquad::ui(|egui_ctx| {
+        let mut egui_mq = std::mem::take(&mut self.egui_mq);
+        egui_mq.ui(|_backend, egui_ctx| {
             let mut visuals = egui_ctx.style().visuals.clone();
             visuals.dark_mode = false;
             visuals.menu_rounding = 2.0.into();
@@ -133,6 +138,7 @@ impl Gui {
                 egui_ctx.output_mut(|o| o.cursor_icon = egui::CursorIcon::None);
             }
         });
+        std::mem::swap(&mut self.egui_mq, &mut egui_mq);
 
         events
     }

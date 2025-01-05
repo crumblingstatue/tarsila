@@ -1,7 +1,7 @@
-use crate::wrapped_image::WrappedImage;
 use crate::Effect;
+use egui_macroquad::macroquad::prelude::Image as MqImage;
 use lapix::{Bitmap, Color, Event};
-use macroquad::prelude::Image as MqImage;
+use {crate::wrapped_image::WrappedImage, egui_macroquad::egui};
 
 const BTN_SIZE: i32 = 20;
 
@@ -76,7 +76,7 @@ impl Palette {
                             Color::from(self.colors[i]).value()
                         );
 
-                        let btn = egui::ImageButton::new(tex, tex.size_vec2());
+                        let btn = egui::ImageButton::new(tex);
                         let btn = ui.add(btn).on_hover_text(tooltip);
                         if btn.clicked() {
                             fx.push(Event::SetMainColor(self.colors[i].into()).into());

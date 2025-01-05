@@ -1,6 +1,6 @@
 use crate::{graphics, Resources};
+use egui_macroquad::macroquad::prelude::*;
 use lapix::{Point, Tool};
-use macroquad::prelude::*;
 use std::collections::HashMap;
 
 pub struct MouseManager {
@@ -108,7 +108,7 @@ impl Cursor {
     pub fn draw(&self) {
         let (x, y) = mouse_position();
         graphics::draw_texture_helper(
-            self.texture,
+            &self.texture,
             (x + self.offset.x, y + self.offset.y).into(),
             1.,
         )

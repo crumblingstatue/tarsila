@@ -1,6 +1,6 @@
-use crate::UiState;
 use lapix::{Position, Rect, Size};
 use std::time::{SystemTime, UNIX_EPOCH};
+use {crate::UiState, egui_macroquad::egui};
 
 const MS_PER_FRAME: usize = 100;
 
@@ -66,7 +66,8 @@ impl Preview {
                         * egui::vec2(self.canvas_size.x as f32, self.canvas_size.y as f32);
                     let scale = self.scale.parse().unwrap_or(1.);
 
-                    let image = egui::Image::new(tex, frame_size * scale)
+                    let image = egui::Image::new(tex)
+                        .max_size(frame_size * scale)
                         .bg_fill(egui::Color32::LIGHT_GRAY);
                     let r = ui.add(image).rect;
 
@@ -90,7 +91,7 @@ impl Preview {
     // TODO this method has a lot in common with graphics::draw_canvas,
     // it would be better to unify these implementations
     pub fn draw(&self, state: &UiState) {
-        use macroquad::prelude::*;
+        use egui_macroquad::macroquad::prelude::*;
 
         if let Some((offset, rect)) = self.config {
             let frames = self.spritesheet.x as usize * self.spritesheet.y as usize;

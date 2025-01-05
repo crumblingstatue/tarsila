@@ -1,8 +1,11 @@
-use crate::{util, Effect, Resources};
-use egui::Color32;
+use egui_macroquad::egui::Color32;
+use egui_macroquad::macroquad::prelude::*;
 use lapix::{Event, Size, Tool};
-use macroquad::prelude::*;
 use std::collections::HashMap;
+use {
+    crate::{util, Effect, Resources},
+    egui_macroquad::egui,
+};
 
 const TOOL_BTN_IMG_SIZE: Size<usize> = Size { x: 16, y: 16 };
 const TOOLS: [Tool; 9] = [
@@ -98,7 +101,7 @@ pub struct ToolButton {
 impl ToolButton {
     pub fn new(tool: Tool) -> Self {
         let bytes = Resources::tool_icon(tool);
-        let img = Image::from_file_with_format(bytes, None);
+        let img = Image::from_file_with_format(bytes, None).unwrap();
 
         let x = TOOL_BTN_IMG_SIZE.x;
         let y = TOOL_BTN_IMG_SIZE.y;
@@ -127,7 +130,7 @@ impl ToolButton {
             ui.style_mut().visuals.widgets.inactive.weak_bg_fill = Color32::from_rgb(218, 218, 218);
         }
         if ui
-            .add(egui::ImageButton::new(texture, texture.size_vec2()))
+            .add(egui::ImageButton::new(texture))
             .on_hover_text(tooltip)
             .clicked()
         {

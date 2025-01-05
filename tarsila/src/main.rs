@@ -1,4 +1,4 @@
-use macroquad::prelude::*;
+use egui_macroquad::macroquad::{self, prelude::*};
 
 mod bg;
 mod error;
