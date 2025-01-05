@@ -19,5 +19,5 @@ lapix = { path = "../lapix", version = "0.1.2" }
 egui-macroquad = { git = "https://github.com/crumblingstatue/egui-macroquad.git", default-features = false }
 rfd = "0.10.0"
 serde = { version = "1.0.152", features = ["derive"] }
-thiserror = "1.0.40"
+thiserror = "2.0.9"
 
