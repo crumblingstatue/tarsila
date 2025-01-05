@@ -1,7 +1,7 @@
-use crate::Effect;
 use egui_macroquad::macroquad::prelude::Image as MqImage;
 use lapix::{Bitmap, Color, Event};
 use {crate::wrapped_image::WrappedImage, egui_macroquad::egui};
+use {crate::Effect, egui_file_dialog::FileDialog};
 
 const BTN_SIZE: i32 = 20;
 
@@ -10,6 +10,7 @@ pub struct Palette {
     images: Vec<MqImage>,
     egui_images: Vec<egui::ColorImage>,
     textures: Vec<Option<egui::TextureHandle>>,
+    file_dialog: FileDialog,
 }
 
 impl Palette {
@@ -19,6 +20,7 @@ impl Palette {
             images: Vec::new(),
             egui_images: Vec::new(),
             textures: Vec::new(),
+            file_dialog: FileDialog::new(),
         }
     }
 
@@ -51,11 +53,7 @@ impl Palette {
             .show(egui_ctx, |ui| {
                 let btn = ui.button("Load");
                 if btn.clicked() {
-                    let dialog = rfd::FileDialog::new();
-
-                    if let Some(path) = dialog.pick_file() {
-                        fx.push(Event::LoadPalette(path).into());
-                    }
+                    self.file_dialog.pick_file();
                 }
                 ui.horizontal_wrapped(|ui| {
                     ui.set_max_width(160.);
@@ -87,6 +85,11 @@ impl Palette {
                     }
                 });
             });
+        self.file_dialog.update(egui_ctx);
+
+        if let Some(path) = self.file_dialog.take_picked() {
+            fx.push(Event::LoadPalette(path).into());
+        }
 
         fx
     }

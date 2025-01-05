@@ -1,8 +1,11 @@
-use lapix::{Event, Size, Tool, Transform};
-use std::path::PathBuf;
+use std::{path::PathBuf, sync::Arc};
 use {
     crate::{Effect, UiEvent},
     egui_macroquad::egui,
+};
+use {
+    egui_file_dialog::FileDialog,
+    lapix::{Event, Size, Tool, Transform},
 };
 
 pub struct MenuBar {
@@ -15,6 +18,15 @@ pub struct MenuBar {
     spritesheet: Size<u8>,
     canvas_size_str: Option<(String, String)>,
     spritesheet_str: Option<(String, String)>,
+    file_dialog: FileDialog,
+    file_op: FileOp,
+}
+
+enum FileOp {
+    SaveProject,
+    LoadProject,
+    ExportImage,
+    ImportImage,
 }
 
 impl MenuBar {
@@ -29,6 +41,19 @@ impl MenuBar {
             spritesheet: (1, 1).into(),
             canvas_size_str: None,
             spritesheet_str: None,
+            file_dialog: FileDialog::new()
+                .add_file_filter(
+                    "Tarsila Files",
+                    Arc::new(|p| p.extension().unwrap_or_default() == "tarsila"),
+                )
+                .add_file_filter(
+                    "Image Files",
+                    Arc::new(|p| {
+                        let ext = p.extension().unwrap_or_default();
+                        ["png", "jpg", "jpeg"].into_iter().any(|e| e == ext)
+                    }),
+                ),
+            file_op: FileOp::SaveProject,
         }
     }
 
@@ -43,6 +68,28 @@ impl MenuBar {
         events.append(&mut self.update_spritesheet_window(egui_ctx));
         events.append(&mut self.update_confirm_exit_window(egui_ctx));
         events.append(&mut self.update_confirm_new_window(egui_ctx));
+        self.file_dialog.update(egui_ctx);
+        if let Some(path) = self.file_dialog.take_picked() {
+            match self.file_op {
+                FileOp::SaveProject => {
+                    self.last_file = Some(path.clone());
+                    events.push(Event::SaveProject(path).into());
+                }
+                FileOp::LoadProject => {
+                    self.last_file = Some(path.clone());
+                    events.push(Event::LoadProject(path).into());
+                }
+                FileOp::ExportImage => {
+                    self.last_file = Some(path.clone());
+                    events.push(Event::Save(path).into());
+                }
+                FileOp::ImportImage => {
+                    self.last_file = Some(path.clone());
+                    events.push(Event::OpenFile(path).into());
+                    events.push(Event::SetTool(Tool::Move).into());
+                }
+            }
+        }
         events
     }
 
@@ -58,66 +105,46 @@ impl MenuBar {
                     }
                     if ui.button("Save Project").clicked() {
                         ui.close_menu();
-                        let mut dialog = rfd::FileDialog::new()
-                            .add_filter("Tarsila files", &["tarsila"])
-                            .add_filter("All files", &["*"]);
+                        self.file_op = FileOp::SaveProject;
+                        self.file_dialog.config_mut().default_file_filter =
+                            Some("Tarsila Files".into());
 
                         if let Some(dir) = self.last_file.as_ref().and_then(|p| p.parent()) {
-                            dialog = dialog.set_directory(dir).set_file_name("project.tarsila");
+                            self.file_dialog.config_mut().initial_directory = dir.to_path_buf();
                         }
-
-                        if let Some(path) = dialog.save_file() {
-                            self.last_file = Some(path.clone());
-                            events.push(Event::SaveProject(path).into());
-                        }
+                        self.file_dialog.save_file();
                     }
                     if ui.button("Load Project").clicked() {
                         ui.close_menu();
-                        let mut dialog = rfd::FileDialog::new()
-                            .add_filter("Tarsila files", &["tarsila"])
-                            .add_filter("All files", &["*"]);
-
+                        self.file_op = FileOp::LoadProject;
+                        self.file_dialog.config_mut().default_file_filter =
+                            Some("Tarsila Files".into());
                         if let Some(dir) = self.last_file.as_ref().and_then(|p| p.parent()) {
-                            dialog = dialog.set_directory(dir);
+                            self.file_dialog.config_mut().initial_directory = dir.to_path_buf();
                         }
-
-                        if let Some(path) = dialog.pick_file() {
-                            self.last_file = Some(path.clone());
-                            events.push(Event::LoadProject(path).into());
-                        }
+                        self.file_dialog.pick_file();
                     }
                     if ui.button("Export Image").clicked() {
                         ui.close_menu();
-                        let mut dialog = rfd::FileDialog::new()
-                            .add_filter("PNG files", &["png"])
-                            .add_filter("JPEG files", &["jpg", "jpeg"])
-                            .add_filter("All files", &["*"]);
+                        self.file_op = FileOp::ExportImage;
+                        self.file_dialog.config_mut().default_file_filter =
+                            Some("Image Files".into());
 
                         if let Some(dir) = self.last_file.as_ref().and_then(|p| p.parent()) {
-                            dialog = dialog.set_directory(dir);
+                            self.file_dialog.config_mut().initial_directory = dir.to_path_buf();
                         }
-
-                        if let Some(path) = dialog.save_file() {
-                            self.last_file = Some(path.clone());
-                            events.push(Event::Save(path).into());
-                        }
+                        self.file_dialog.save_file();
                     }
                     if ui.button("Import Image").clicked() {
                         ui.close_menu();
-                        let mut dialog = rfd::FileDialog::new()
-                            .add_filter("All files", &["*"])
-                            .add_filter("PNG files", &["png"])
-                            .add_filter("JPEG files", &["jpg", "jpeg"]);
+                        self.file_op = FileOp::ImportImage;
+                        self.file_dialog.config_mut().default_file_filter =
+                            Some("Image Files".into());
 
                         if let Some(dir) = self.last_file.as_ref().and_then(|p| p.parent()) {
-                            dialog = dialog.set_directory(dir);
+                            self.file_dialog.config_mut().initial_directory = dir.to_path_buf();
                         }
-
-                        if let Some(path) = dialog.pick_file() {
-                            self.last_file = Some(path.clone());
-                            events.push(Event::OpenFile(path).into());
-                            events.push(Event::SetTool(Tool::Move).into());
-                        }
+                        self.file_dialog.pick_file();
                     }
                     if ui.button("Exit").clicked() {
                         self.show_confirm_exit_window = true;
