@@ -1,4 +1,7 @@
-use crate::{color, Color, Error, Point, Result, Size};
+use {
+    crate::{color, Color, Error, Point, Result, Size},
+    image::ImageFormat,
+};
 
 // TODO rename this trait
 /// Represents a 2D matrix of pixels (an image)
@@ -43,7 +46,7 @@ pub trait Bitmap: Clone {
 
         let vec = Vec::<u8>::new();
         let mut vec = std::io::Cursor::new(vec);
-        img.write_to(&mut vec, image::ImageOutputFormat::Png)?;
+        img.write_to(&mut vec, ImageFormat::Png)?;
 
         Ok(vec.into_inner())
     }
@@ -51,7 +54,7 @@ pub trait Bitmap: Clone {
     /// Create a new image from a sequence of bytes read from an image file
     /// (e.g. PNG or JPG)
     fn try_from_file_bytes(bytes: Vec<u8>) -> Result<Self> {
-        let reader = image::io::Reader::new(std::io::Cursor::new(bytes)).with_guessed_format()?;
+        let reader = image::ImageReader::new(std::io::Cursor::new(bytes)).with_guessed_format()?;
         let img = reader.decode()?;
         let img = img.into_rgba8();
 

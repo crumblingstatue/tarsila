@@ -1,5 +1,5 @@
 use crate::{color, Bitmap, Color, Error, Result};
-use image::{codecs, ImageEncoder, ImageFormat, ImageOutputFormat};
+use image::{codecs, ImageEncoder, ImageFormat};
 use std::fmt::Debug;
 use std::path::PathBuf;
 
@@ -51,8 +51,7 @@ impl Clone for SaveProject {
 
 /// Load an image from a file in the specified path
 pub fn load_img_from_file(path: &str) -> Result<image::RgbaImage> {
-    use image::io::Reader as ImageReader;
-    let img = ImageReader::open(path)?.decode()?;
+    let img = image::ImageReader::open(path)?.decode()?;
 
     Ok(img.into_rgba8())
 }
@@ -76,19 +75,16 @@ pub fn save_image<IMG: Bitmap>(bitmap: IMG, path: &str) -> Result<()> {
     let bytes = bitmap.bytes();
     let width = bitmap.width() as u32;
     let height = bitmap.height() as u32;
-    let color = image::ColorType::Rgba8;
+    let color = image::ExtendedColorType::Rgba8;
 
     let file = std::fs::File::create(path)?;
     let buffer = std::io::BufWriter::new(file);
 
-    match ImageFormat::from_path(path)
-        .unwrap_or(ImageFormat::Png)
-        .into()
-    {
-        ImageOutputFormat::Png => {
+    match ImageFormat::from_path(path).unwrap_or(ImageFormat::Png) {
+        ImageFormat::Png => {
             codecs::png::PngEncoder::new(buffer).write_image(bytes, width, height, color)?
         }
-        ImageOutputFormat::Jpeg(_) => codecs::jpeg::JpegEncoder::new_with_quality(buffer, 100)
+        ImageFormat::Jpeg => codecs::jpeg::JpegEncoder::new_with_quality(buffer, 100)
             .write_image(bytes, width, height, color)?,
         _ => return Err(Error::UnsupportedImageFormat),
     };
